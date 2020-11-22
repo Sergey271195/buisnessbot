@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import ViberUser, check_or_create_user
+from .models import ViberUser, check_or_create_user, check_or_create_user_with_context
 from .ViberbotPython import ViberBot
 
 import requests
@@ -69,7 +69,12 @@ def handle_message(request_body):
             handle_text_message(user = user, message = message)
 
 def handle_conversation_start(request_body):
-    user = check_or_create_user(request_body.get('user'))
+    context = request_body.get('context')
+    if context:
+        user = check_or_create_user_with_context(request_body.get('user'), context = context)
+    else:
+        user = check_or_create_user(request_body.get('user'))
+    handle_text_message(user = user, message = {'message_text': ''})
 
 
 

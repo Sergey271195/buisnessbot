@@ -5,7 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = '4c783b57e380086b-c90dda0abe0e8ebe-7a99acd0bb05c2de'
-HOST_URL = 'https://5d9da2d96a4f.ngrok.io'
+HOST_URL = 'https://5125b764b219.ngrok.io'
 
 KEYBOARD = {
     "Type":"keyboard",
@@ -69,7 +69,7 @@ class ViberBot():
         request = requests.post(url = self.RESOURCE_WEBHOOK_URL, headers = self.HEADERS, data = json_data)
         if request.status_code == 200:
             response = request.json()
-            response_status = self.check_response_status(repsonse)
+            response_status = self.check_response_status(response)
             
             if response_status == 200:
                 logging.info("[CREATE WEBHOOK] SUCCESSFULLY CREATED WEBHOOK")
