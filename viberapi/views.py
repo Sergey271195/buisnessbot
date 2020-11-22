@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import ViberUser, check_or_create_user, check_or_create_user_with_context
 from .ViberbotPython import ViberBot
+from telegram.TelegrambotPython import TelegramBot
 
 import requests
 import json
@@ -15,16 +16,19 @@ HEADERS = {'X-Viber-Auth-Token': TOKEN}
 HOST_URL = 'https://5d9da2d96a4f.ngrok.io'
 RESOURCE_WEBHOOK_URL = 'https://chatapi.viber.com/pa/set_webhook'
 VIBER_BOT = ViberBot()
+TELEGRAM_BOT = TelegramBot()
 
 
 def create_webhook(request):
-    response = VIBER_BOT.create_webhook()
-    return JsonResponse(response)
+    viber_response = VIBER_BOT.create_webhook()
+    telegram_response = TELEGRAM_BOT.create_webhook()
+    return JsonResponse(viber_response)
 
 
 def remove_webhook(request):
-    response = VIBER_BOT.remove_webhook()
-    return JsonResponse(response)
+    viber_response = VIBER_BOT.remove_webhook()
+    telegram_response = TELEGRAM_BOT.remove_webhook()
+    return JsonResponse(viber_response)
 
 
 def handle_text_message(user, message):
@@ -86,7 +90,7 @@ def broadcast_message(message):
 
 @csrf_exempt
 def entrypoint(request):
-    logging.info("[ENTRYPOINT]")
+    logging.info("[VIBER ENTRYPOINT]")
     request_body = json.loads(request.body)
     event = request_body.get('event')
 

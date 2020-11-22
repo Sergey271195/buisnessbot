@@ -64,7 +64,7 @@ class ViberBot():
         return 400
     
     def create_webhook(self):
-        logging.info("[CREATE WEBHOOK]")
+        logging.info("[VIBER WEBHOOK] CREATING WEBHOOK")
         json_data = json.dumps({'url': self.HOST_URL}, ensure_ascii = False)
         request = requests.post(url = self.RESOURCE_WEBHOOK_URL, headers = self.HEADERS, data = json_data)
         if request.status_code == 200:
@@ -72,26 +72,26 @@ class ViberBot():
             response_status = self.check_response_status(response)
             
             if response_status == 200:
-                logging.info("[CREATE WEBHOOK] SUCCESSFULLY CREATED WEBHOOK")
+                logging.info("[VIBER WEBHOOK] SUCCESSFULLY CREATED WEBHOOK")
                 return {'STATUS_CODE': 200}
 
-            logging.info("[CREATE WEBHOOK] ERROR WHILE CREATING WEBHOOK")
-            logging.info(f"[CREATE WEBHOOK] {response}")  
+            logging.info("[VIBER WEBHOOK] ERROR WHILE CREATING WEBHOOK")
+            logging.info(f"[VIBER WEBHOOK] {response}")  
 
         return {'STATUS_CODE': 400}
 
     def remove_webhook(self):
-        logging.info("[REMOVE WEBHOOK]")
+        logging.info("[VIBER WEBHOOK] REMOVING WEBHOOK")
         json_data = json.dumps({'url': ''}, ensure_ascii = False)
         request = requests.post(url = self.RESOURCE_WEBHOOK_URL, headers = self.HEADERS, data = json_data)
         response = request.json()
-        logging.info("[REMOVE WEBHOOK] SUCCESSFULLY REMOVED WEBHOOK")
+        logging.info("[VIBER WEBHOOK] SUCCESSFULLY REMOVED WEBHOOK")
         return {'STATUS_CODE': 200}
 
     
     def send_text_message(self, message, receiver = None, keyboard = False):
 
-        logging.info("[SEND MESSAGE]")
+        logging.info("[SEND MESSAGE VIBER] SENDING MESSAGE")
 
         post_data = {
             'sender': {
@@ -119,18 +119,18 @@ class ViberBot():
             response_status = self.check_response_status(response)
             
             if response_status == 200:
-                logging.info(f"[SEND MESSAGE] SUCCESSFULLY SEND TEXT MESSAGE {message}")
+                logging.info(f"[SEND MESSAGE VIBER] SUCCESSFULLY SEND TEXT MESSAGE {message}")
                 return {'STATUS_CODE': 200}
 
-            logging.info("[SEND MESSAGE] ERROR WHILE SENDING MESSAGE")
-            logging.info(f"[SEND MESSAGE] {response}")  
+            logging.info("[SEND MESSAGE VIBER] ERROR WHILE SENDING MESSAGE")
+            logging.info(f"[SEND MESSAGE VIBER] {response}")  
 
         return {'STATUS_CODE': 400}
 
 
     def broadcast_message(self, message, ids):
 
-            logging.info("[BROADCAST MESSAGE]")
+            logging.info("[BROADCAST MESSAGE VIBER]")
 
             post_data = {
                 'sender': {
@@ -154,10 +154,10 @@ class ViberBot():
                 response_status = self.check_response_status(response)
                 
                 if response_status == 200:
-                    logging.info(f"[BROADCAST MESSAGE] SUCCESSFULLY BROADCASTING TEXT MESSAGE {message}")
+                    logging.info(f"[BROADCAST MESSAGE VIBER] SUCCESSFULLY BROADCASTING TEXT MESSAGE {message}")
                     return {'STATUS_CODE': 200}
 
-                logging.info("[BROADCAST MESSAGE] ERROR WHILE BROADCASTING MESSAGE")
-                logging.info(f"[BROADCAST MESSAGE] {response}")  
+                logging.info("[BROADCAST MESSAGE VIBER] ERROR WHILE BROADCASTING MESSAGE")
+                logging.info(f"[BROADCAST MESSAGE VIBER] {response}")  
 
             return {'STATUS_CODE': 400}
