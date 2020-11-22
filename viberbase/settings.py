@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'viberapi.apps.ViberapiConfig',
+    'telegram.apps.TelegramConfig',
 ]
 
 MIDDLEWARE = [
