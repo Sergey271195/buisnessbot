@@ -4,6 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import ViberUser, check_or_create_user, check_or_create_user_with_context
 from .ViberbotPython import ViberBot
 from telegram.TelegrambotPython import TelegramBot
+from .keyboards import (MAIN_KEYBOARD, SERVICES_KEYBOARD, PROMOTION_KEYBOARD,
+                        PERFOMANCE_KEYBOARD, TECH_SUPPORT_KEYBOARD, FINANCIAL_SUPPORT_KEYBOARD,
+                        AGRICULTURE_KEYBOARD, EXPORT_KEYBOARD )
 
 import requests
 import json
@@ -35,32 +38,81 @@ def handle_text_message(user, message):
     message_text = message.get('text')
     logging.info(f"[HANDLE TEXT MESSAGE] RECIEIVING MESSAGE: '{message_text}'")
 
-    if message_text == 'NEWS':
+    if message_text == 'illuminator_NEWS':
         VIBER_BOT.send_text_message(
             receiver = user,
             message = 'Запрос на получение списка новостей...',
-            keyboard = True
+            keyboard = MAIN_KEYBOARD
         )
 
-    elif message_text == 'EVENTS':
+    elif message_text == 'illuminator_EVENTS':
         VIBER_BOT.send_text_message(
             receiver = user,
             message = 'Запрос на получение списка мероприятий...',
-            keyboard = True
+            keyboard = MAIN_KEYBOARD
         )
 
-    elif message_text == 'SERVICES':
+    elif message_text == 'illuminator_SERVICES':
         VIBER_BOT.send_text_message(
             receiver = user,
-            message = 'Запрос на получение списка услуг...',
-            keyboard = True
+            message = 'Доступные меры поддержки',
+            keyboard = SERVICES_KEYBOARD
+        )
+
+    elif message_text == 'illuminator_PROMOTION':
+        VIBER_BOT.send_text_message(
+            receiver = user,
+            message = 'Меры поддержки. Продвижение',
+            keyboard = PROMOTION_KEYBOARD
+        )
+
+    elif message_text == 'illuminator_BACK_SERVICES':
+        VIBER_BOT.send_text_message(
+            receiver = user,
+            message = 'Меры поддержки. Продвижение',
+            keyboard = SERVICES_KEYBOARD
+        )
+
+    elif message_text == 'illuminator_PERFOMANCE':
+        VIBER_BOT.send_text_message(
+            receiver = user,
+            message = 'Меры поддержки. Производительность труда',
+            keyboard = PERFOMANCE_KEYBOARD
+        )
+
+    elif message_text == 'illuminator_TECH_CONNECTION':
+        VIBER_BOT.send_text_message(
+            receiver = user,
+            message = 'Меры поддержки. Техприсоединение',
+            keyboard = TECH_SUPPORT_KEYBOARD
+        )
+
+    elif message_text == 'illuminator_FINANCIAL_SUPPORT':
+        VIBER_BOT.send_text_message(
+            receiver = user,
+            message = 'Меры поддержки. Финансовая поддержка',
+            keyboard = FINANCIAL_SUPPORT_KEYBOARD
+        )
+    
+    elif message_text == 'illuminator_AGRICULTURE':
+        VIBER_BOT.send_text_message(
+            receiver = user,
+            message = 'Меры поддержки. Сельское хозяйство',
+            keyboard = AGRICULTURE_KEYBOARD
+        )
+
+    elif message_text == 'illuminator_EXPORT':
+        VIBER_BOT.send_text_message(
+            receiver = user,
+            message = 'Меры поддержки. Экспорт',
+            keyboard = EXPORT_KEYBOARD
         )
 
     else:
         VIBER_BOT.send_text_message(
             receiver = user, 
             message = 'Воспользуйтесь клавиатурой для получения актуальной информации',
-            keyboard = True
+            keyboard = MAIN_KEYBOARD
         )
 
 

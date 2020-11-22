@@ -35,14 +35,10 @@ def check_or_create_user(request_user):
             logging.info(f"{e}")
             return None
 
-def check_or_create_user_with_context(request_user, context):
+def check_or_create_user_with_context(request_user, bitrix_id):
 
     logging.info("[CHECK OR CREATE USER WITH CONTEXT]")
-    try:
-        bitrix_id = int(context.replace('userId', ''))
-        logging.info(f"[CHECK OR CREATE USER WITH CONTEXT] CREATING USER WITH BITRIX_ID = {bitrix_id}")
-    except Exception as e:
-        logging.info(f"[CHECK OR CREATE USER WITH CONTEXT] WRONG CONTEXT PARAMETERS {context}")
+    logging.info(f"[CHECK OR CREATE USER WITH CONTEXT] CREATING USER WITH BITRIX_ID = {bitrix_id}")
     if bitrix_id:
         try:
             telegram_user = TelegramUser.objects.get(telegram_id = request_user.get('id'), bitrix_id = bitrix_id)

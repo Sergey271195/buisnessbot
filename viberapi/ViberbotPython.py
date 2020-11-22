@@ -7,9 +7,8 @@ from .keyboards import MAIN_KEYBOARD
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = '4c783b57e380086b-c90dda0abe0e8ebe-7a99acd0bb05c2de'
-HOST_URL = 'https://5125b764b219.ngrok.io'
-
-
+HOST_URL = 'https://56ab1fa022f4.ngrok.io'
+DEEPLINK_URL = 'viber://pa?chatUri=testwebpythonbot'
 
 class ViberBot():
 
@@ -69,7 +68,7 @@ class ViberBot():
         if receiver:
             post_data['receiver'] = receiver.viber_id
         if keyboard:
-            post_data['keyboard'] = MAIN_KEYBOARD
+            post_data['keyboard'] = keyboard
 
         json_data = json.dumps(post_data, ensure_ascii = False)
 
