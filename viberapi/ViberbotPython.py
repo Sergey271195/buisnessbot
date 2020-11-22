@@ -2,48 +2,14 @@ import requests
 import json
 import logging
 
+from .keyboards import MAIN_KEYBOARD
+
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = '4c783b57e380086b-c90dda0abe0e8ebe-7a99acd0bb05c2de'
 HOST_URL = 'https://5125b764b219.ngrok.io'
 
-KEYBOARD = {
-    "Type":"keyboard",
-    "DefaultHeight": True,
-    "Buttons": [{
-        "Columns": 6,
-        "Rows": 1,
-        "ActionType": "reply",
-        "ActionBody": "NEWS",
-        "Text": "Новости",
-        "TextVAlign": "middle",
-        "TextHAlign": "center",
-        "TextOpacity": 60,
-        "TextSize": "regular"
-    },
-    {
-        "Columns": 6,
-        "Rows": 1,
-        "ActionType": "reply",
-        "ActionBody": "EVENTS",
-        "Text": "Мероприятия",
-        "TextVAlign": "middle",
-        "TextHAlign": "center",
-        "TextOpacity": 60,
-        "TextSize": "regular"
-    },
-    {
-        "Columns": 6,
-        "Rows": 1,
-        "ActionType": "reply",
-        "ActionBody": "SERVICES",
-        "Text": "Услуги",
-        "TextVAlign": "middle",
-        "TextHAlign": "center",
-        "TextOpacity": 60,
-        "TextSize": "regular"
-    }]
-}
+
 
 class ViberBot():
 
@@ -54,7 +20,6 @@ class ViberBot():
         self.RESOURCE_WEBHOOK_URL = 'https://chatapi.viber.com/pa/set_webhook'
         self.RESOURCE_MESSAGE_URL = 'https://chatapi.viber.com/pa/send_message'
         self.RESOURCE_BROADCAST_URL = 'https://chatapi.viber.com/pa/broadcast_message'
-        self.KEYBOARD = KEYBOARD
 
     def check_response_status(self, response):
         status = response.get('status')
@@ -104,7 +69,7 @@ class ViberBot():
         if receiver:
             post_data['receiver'] = receiver.viber_id
         if keyboard:
-            post_data['keyboard'] = self.KEYBOARD
+            post_data['keyboard'] = MAIN_KEYBOARD
 
         json_data = json.dumps(post_data, ensure_ascii = False)
 
