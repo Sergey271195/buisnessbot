@@ -7,7 +7,7 @@ from .keyboards import MAIN_KEYBOARD
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = '4c783b57e380086b-c90dda0abe0e8ebe-7a99acd0bb05c2de'
-HOST_URL = 'https://56ab1fa022f4.ngrok.io'
+HOST_URL = 'https://0c800ab0968a.ngrok.io'
 DEEPLINK_URL = 'viber://pa?chatUri=testwebpythonbot'
 
 class ViberBot():

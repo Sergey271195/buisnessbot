@@ -4,7 +4,7 @@ import os
 import logging
 
 TOKEN = '1454168643:AAGQ8X7y9zWrSvsjZ5lYk6cKuwblTTwD55M' 
-HOST_URL = 'https://56ab1fa022f4.ngrok.io/telegram/'
+HOST_URL = 'https://0c800ab0968a.ngrok.io/telegram/'
 DEEPLINK_URL = 'https://t.me/MyBuisnessIvanovbot'
 
 logging.basicConfig(level=logging.INFO)
@@ -56,7 +56,7 @@ class TelegramBot():
     def send_text_message(self, message, user, keyboard = False):
         logging.info(f'[TELEGRAM SEND MESSAGE] TRYING TO SEND MESSAGE TO {user.name}-{user.telegram_id}')
         request_url = self.BASE_URL + '/sendMessage'
-        data = {'chat_id': user.telegram_id, 'text': message}
+        data = {'chat_id': user.telegram_id, 'text': message, 'parse_mode': 'HTML'}
         if keyboard:
             data['reply_markup'] = keyboard
         json_data = json.dumps(data)
@@ -73,7 +73,7 @@ class TelegramBot():
     def edit_text_message(self, message_id, message_update, user, keyboard = False):
         logging.info(f'[TELEGRAM EDIT MESSAGE] TRYING TO EDIT MESSAGE {message_id} TO {user.name}-{user.telegram_id}')
         request_url = self.BASE_URL + '/editMessageText'
-        data = {'chat_id': user.telegram_id, 'message_id': message_id, 'text': message_update}
+        data = {'chat_id': user.telegram_id, 'message_id': message_id, 'text': message_update, 'parse_mode': 'HTML'}
         if keyboard:
             data['reply_markup'] = keyboard
         json_data = json.dumps(data)

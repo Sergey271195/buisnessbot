@@ -5,9 +5,13 @@ from .models import TelegramUser, check_or_create_user, check_or_create_user_wit
 from .TelegrambotPython import TelegramBot
 from .keyboards import (MAIN_KEYBOARD, SERVICES_KEYBOARD, PROMOTION_KEYBOARD,
                         PERFOMANCE_KEYBOARD, TECH_SUPPORT_KEYBOARD, FINANCIAL_SUPPORT_KEYBOARD,
-                        AGRICULTURE_KEYBOARD, EXPORT_KEYBOARD )
+                        AGRICULTURE_KEYBOARD, EXPORT_KEYBOARD, )
+from .message_handlers import handle_news_request, handle_events_request, handle_services_request
+
 import json
 import logging
+import requests
+import re
 
 logging.basicConfig(level=logging.INFO)
 TELEGRAM_BOT = TelegramBot()
@@ -78,23 +82,35 @@ def handle_callback_query(user, data, message_id):
     logging.info("[TELEGRAM ENTRYPOINT] CALLBACK QUERY")
     user = check_or_create_user(request_user = user)
 
-    if data == 'illuminator_NEWS':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            message_update = 'Получение акутальных новостей...',
-            user = user,
-            keyboard = MAIN_KEYBOARD,
-        )
+    if 'illuminator_NEWS' in data:
+        logging.info("[TELEGRAM ENTRYPOINT] HANDLING NEWS REQUEST")
+        if '$' in data:
+            try:
+                page = int(data.split('$')[1])
+                handle_news_request(user = user, message_id = message_id, page = page)
+            except Exception as e:
+                logging.info("[TELEGRAM ENTRYPOINT] EXCEPTION WHILE HANDLING NEWS REQUEST")
+                logging.info(e)
+        else:
+            handle_news_request(user = user, message_id = message_id)
     
-    elif data == 'illuminator_EVENTS':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            message_update = 'Получение акутальных мероприятий...',
-            user = user,
-            keyboard = MAIN_KEYBOARD,
-        )
+    elif 'illuminator_EVENTS' in data:
+        logging.info("[TELEGRAM ENTRYPOINT] HANDLING EVENTS REQUEST")
+        if '$' in data:
+            try:
+                print(data)
+                page = int(data.split('$')[1])
+                
+                handle_events_request(user = user, message_id = message_id, page = page)
+            except Exception as e:
+                logging.info("[TELEGRAM ENTRYPOINT] EXCEPTION WHILE HANDLING EVENTS REQUEST")
+                logging.info(e)
+        else:
+            handle_events_request(user = user, message_id = message_id)
     
     elif data == 'illuminator_SERVICES' or data == 'illuminator_BACK_SERVICES':
+
+        handle_services_request(user, message_id)
         TELEGRAM_BOT.edit_text_message(
             message_id = message_id,
             message_update = 'Доступные меры поддержки',

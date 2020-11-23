@@ -1,5 +1,33 @@
 BASE_URL = 'https://xn--37-9kcqjffxnf3b.xn--p1ai/mery-gospodderzhki/'
 
+
+def create_switch_keyboard(request_type, next_page = None, prev_page = None):
+    if next_page and prev_page:
+        KEYBOARD = {
+            'inline_keyboard': [
+                [{'text': 'Продолжение', 'callback_data': f'illuminator_{request_type}${next_page}'}],
+                [{'text': 'Назад', 'callback_data': f'illuminator_{request_type}${prev_page}'}],
+                [{'text': 'Меню', 'callback_data': f'illuminator_BACK_MAIN'}],
+            ]
+        }
+    elif next_page:
+        KEYBOARD = {
+            'inline_keyboard': [
+                [{'text': 'Продолжение', 'callback_data': f'illuminator_{request_type}${next_page}'}],
+                [{'text': 'Меню', 'callback_data': f'illuminator_BACK_MAIN'}],
+            ]
+        }
+    else:
+        KEYBOARD = {
+            'inline_keyboard': [
+                [{'text': 'Назад', 'callback_data': f'illuminator_{request_type}${prev_page}'}],
+                [{'text': 'Меню', 'callback_data': f'illuminator_BACK_MAIN'}],
+            ]
+        }
+    return KEYBOARD
+
+
+
 MAIN_KEYBOARD = {
     'inline_keyboard': [
         [{'text': 'Новости', 'callback_data': 'illuminator_NEWS'}],
