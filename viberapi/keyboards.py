@@ -2,6 +2,102 @@
 BASE_URL = 'https://xn--37-9kcqjffxnf3b.xn--p1ai/mery-gospodderzhki/'
 
 
+def create_switch_keyboard(request_type, next_page = None, prev_page = None):
+    if next_page and prev_page:
+        KEYBOARD = {
+            "Type":"keyboard",
+            "DefaultHeight": True,
+            "Buttons": [{
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": "reply",
+                "ActionBody": f'illuminator_{request_type}${next_page}',
+                "Text": "Продолжение",
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            },
+            {
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": "reply",
+                "ActionBody": f'illuminator_{request_type}${prev_page}',
+                "Text": "Назад",
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            },
+            {
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": "reply",
+                "ActionBody": f'illuminator_BACK_MAIN',
+                "Text": "Меню",
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            }]
+        }
+    elif next_page:
+        KEYBOARD = {
+            "Type":"keyboard",
+            "DefaultHeight": True,
+            "Buttons": [{
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": "reply",
+                "ActionBody": f'illuminator_{request_type}${next_page}',
+                "Text": "Продолжение",
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            },
+            {
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": "reply",
+                "ActionBody": f'illuminator_BACK_MAIN',
+                "Text": "Меню",
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            }]
+        }
+    else:
+        KEYBOARD = {
+            "Type":"keyboard",
+            "DefaultHeight": True,
+            "Buttons": [{
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": "reply",
+                "ActionBody": f'illuminator_{request_type}${prev_page}',
+                "Text": "Назад",
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            },
+            {
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": "reply",
+                "ActionBody": f'illuminator_BACK_MAIN',
+                "Text": "Меню",
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            }]
+        }
+    return KEYBOARD
+
+
 MAIN_KEYBOARD = {
     "Type":"keyboard",
     "DefaultHeight": True,
