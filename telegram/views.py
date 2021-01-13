@@ -3,10 +3,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import TelegramUser, check_or_create_user, check_or_create_user_with_context
 from .TelegrambotPython import TelegramBot
-from .keyboards import (MAIN_KEYBOARD, SERVICES_KEYBOARD, PROMOTION_KEYBOARD,
-                        PERFOMANCE_KEYBOARD, TECH_SUPPORT_KEYBOARD, FINANCIAL_SUPPORT_KEYBOARD,
-                        AGRICULTURE_KEYBOARD, EXPORT_KEYBOARD, )
-from .message_handlers import handle_news_request, handle_events_request, handle_services_request
+from .keyboards import MAIN_KEYBOARD
+from .message_handlers import (handle_news_request, handle_events_request, handle_services_request, 
+                            handle_service_list_request, handle_service_request, handle_sub_service_request )
 
 import json
 import logging
@@ -65,9 +64,9 @@ def handle_bot_commands(message_text, user):
     if '/start' in message_text:
         logging.info("[TELEGRAM ENTRYPOINT] START BOT COMMAND")
         try:
-            bitrix_id = int(message_text.replace('/start', ''))
-            logging.info(f"[TELEGRAM ENTRYPOINT] CHECKING USER WITH BITRIX_ID {bitrix_id}")
-            user = check_or_create_user_with_context(request_user = user, bitrix_id = bitrix_id)
+            user_info = message_text.replace('/start', '').strip()
+            logging.info(f"[TELEGRAM ENTRYPOINT] CHECKING USER WITH USER INFO {user_info}")
+            user = check_or_create_user_with_context(request_user = user, user_info = user_info)
         except Exception as e:
             logging.info("[TELEGRAM ENTRYPOINT] WRONG PARAMETERS WITH REQUEST. UNABLE TO GET BITRIX_ID")
             user = check_or_create_user(request_user = user)
@@ -98,9 +97,7 @@ def handle_callback_query(user, data, message_id):
         logging.info("[TELEGRAM ENTRYPOINT] HANDLING EVENTS REQUEST")
         if '$' in data:
             try:
-                print(data)
                 page = int(data.split('$')[1])
-                
                 handle_events_request(user = user, message_id = message_id, page = page)
             except Exception as e:
                 logging.info("[TELEGRAM ENTRYPOINT] EXCEPTION WHILE HANDLING EVENTS REQUEST")
@@ -109,68 +106,18 @@ def handle_callback_query(user, data, message_id):
             handle_events_request(user = user, message_id = message_id)
     
     elif data == 'illuminator_SERVICES' or data == 'illuminator_BACK_SERVICES':
-
-        handle_services_request(user, message_id)
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            message_update = 'Доступные меры поддержки',
-            user = user,
-            keyboard = SERVICES_KEYBOARD,
-        )
-
-    elif data == 'illuminator_PROMOTION':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            message_update = 'Меры поддержки. Продвижение',
-            user = user,
-            keyboard = PROMOTION_KEYBOARD,
-        )
+        handle_service_list_request(user, message_id)
     
-    elif data == 'illuminator_PERFOMANCE':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            user = user,
-            message_update = 'Меры поддержки. Производительность труда',
-            keyboard = PERFOMANCE_KEYBOARD
-        )
-
-    elif data == 'illuminator_TECH_CONNECTION':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            user = user,
-            message_update = 'Меры поддержки. Техприсоединение',
-            keyboard = TECH_SUPPORT_KEYBOARD
-        )
-
-    elif data == 'illuminator_FINANCIAL_SUPPORT':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            user = user,
-            message_update = 'Меры поддержки. Финансовая поддержка',
-            keyboard = FINANCIAL_SUPPORT_KEYBOARD
-        )
+    elif 'illuminator_SERVICE' in data:
+        handle_service_request(user, message_id, data)
     
-    elif data == 'illuminator_AGRICULTURE':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            user = user,
-            message_update = 'Меры поддержки. Сельское хозяйство',
-            keyboard = AGRICULTURE_KEYBOARD
-        )
-
-    elif data == 'illuminator_EXPORT':
-        TELEGRAM_BOT.edit_text_message(
-            message_id = message_id,
-            user = user,
-            message_update = 'Меры поддержки. Экспорт',
-            keyboard = EXPORT_KEYBOARD
-        )
+    elif 'illuminator_SUBSERVICE' in data:
+        handle_sub_service_request(user, message_id, data)
 
     else:
         TELEGRAM_BOT.edit_text_message(
-                message_id = message_id,
-                message_update = 'Воспользуйтесь клавиатурой для получения актуальной информации',
-                user = user,
-                keyboard = MAIN_KEYBOARD,
-            )
-
+                        message_update = 'Воспользуйтесь клавиатурой для получения актуальной информации',
+                        user = user,
+                        keyboard = MAIN_KEYBOARD,
+                        message_id = message_id,
+                    )

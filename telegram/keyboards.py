@@ -36,70 +36,40 @@ MAIN_KEYBOARD = {
     ]
 }
 
-SERVICES_KEYBOARD = {
-    'inline_keyboard': [
-        [{'text': 'Продвижение', 'callback_data': 'illuminator_PROMOTION'}],
-        [{'text': 'Производительность труда', 'callback_data': 'illuminator_PERFOMANCE'}],
-        [{'text': 'Техприсоединение', 'callback_data': 'illuminator_TECH_CONNECTION'}],
-        [{'text': 'Финансовая поддержка', 'callback_data': 'illuminator_FINANCIAL_SUPPORT'}],
-        [{'text': 'Сельское хозяйство', 'callback_data': 'illuminator_AGRICULTURE'}],
-        [{'text': 'Экспорт', 'callback_data': 'illuminator_EXPORT'}],
-        [{'text': 'Назад', 'callback_data': 'illuminator_BACK_MAIN'}],
-    ]
-}
+BACK_TO_MAIN_BUTTON = [{'text': 'Назад', 'callback_data': 'illuminator_BACK_MAIN'}]
+BACK_TO_SERVICES_BUTTON = [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}]
 
-PROMOTION_KEYBOARD = {
-    'inline_keyboard': [
-        [{'text': 'Консультации', 'url': f"{BASE_URL}prodvizhenie/"}],
-        [{'text': 'Обучение', 'url': f"{BASE_URL}prodvizhenie/"}],
-        [{'text': 'Продвижение', 'url': f"{BASE_URL}prodvizhenie/"}],
-        [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}],
-    ]
-}
+def create_dynamic_service_keyboard(service_data):
+    try:
+        inline_keyboard = [
+                [{'text': service.get('NAME'), 'callback_data': f"illuminator_SERVICE${service.get('ID')}"}] 
+                for service in service_data
+            ]
+        inline_keyboard.append(BACK_TO_MAIN_BUTTON)
+        return {'inline_keyboard': inline_keyboard}
+    except Exception as e:
+        logging.info(f'[DYNAMIC SERVICE KEYBOARD] CREATION ERROR ')
+        logging.info(f'{e}')
+        return MAIN_KEYBOARD
 
-PERFOMANCE_KEYBOARD = {
-    'inline_keyboard': [
-        [{'text': 'Повышение производительности труда', 'url': f"{BASE_URL}proizvoditelnost-truda/"}],
-        [{'text': 'Инжиниринговые услуги', 'url': f"{BASE_URL}proizvoditelnost-truda/"}],
-        [{'text': 'Национальные проекты', 'url': f"{BASE_URL}proizvoditelnost-truda/"}],
-        [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}],
-    ]
-}
+def create_dynamic_subservice_keyboard(service_data, service_id):
+    try:
+        inline_keyboard = [
+                [{'text': service.get('NAME'), 'callback_data': f'illuminator_SUBSERVICE${service.get("ID")}${service_id}'}] 
+                for service in service_data
+            ]
+        inline_keyboard.append(BACK_TO_SERVICES_BUTTON)
+        return {'inline_keyboard': inline_keyboard}
+    except Exception as e:
+        return MAIN_KEYBOARD
 
-TECH_SUPPORT_KEYBOARD = {
-    'inline_keyboard': [
-        [{'text': 'Консультации', 'url': f"{BASE_URL}tekhprisoedinenie/"}],
-        [{'text': 'Организация первиочной заявки', 'url': f"{BASE_URL}tekhprisoedinenie/"}],
-        [{'text': 'Анализ и обоснованность затрат', 'url': f"{BASE_URL}tekhprisoedinenie/"}],
-        [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}],
-    ]
-}
-
-FINANCIAL_SUPPORT_KEYBOARD = {
-    'inline_keyboard': [
-        [{'text': 'Микрозаймы. Кредитование', 'url': f"{BASE_URL}finansovaya-podderzhka/"}],
-        [{'text': 'Поручительство', 'url': f"{BASE_URL}finansovaya-podderzhka/"}],
-        [{'text': 'Льготный лизинг', 'url': f"{BASE_URL}finansovaya-podderzhka/"}],
-        [{'text': 'Займы специализированных фондов', 'url': f"{BASE_URL}finansovaya-podderzhka/"}],
-        [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}],
-    ]
-}
-
-AGRICULTURE_KEYBOARD = {
-    'inline_keyboard': [
-        [{'text': 'Консультации и обучение', 'url': f"{BASE_URL}selskoe-khozyaystvo/"}],
-        [{'text': 'Сопровождение с/х товаропроизводителей', 'url': f"{BASE_URL}selskoe-khozyaystvo/"}],
-        [{'text': 'Меры господдержки с/х товаропроизводителей', 'url': f"{BASE_URL}selskoe-khozyaystvo/"}],
-        [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}],
-    ]
-}
-
-EXPORT_KEYBOARD = {
-    'inline_keyboard': [
-        [{'text': 'Консультации и обучение', 'url': f"{BASE_URL}eksport/"}],
-        [{'text': 'Продвижение на экспорт', 'url': f"{BASE_URL}eksport/"}],
-        [{'text': 'Перевод на иностранные языки', 'url': f"{BASE_URL}eksport/"}],
-        [{'text': 'Поиск иностранных партнеров', 'url': f"{BASE_URL}eksport/"}],
-        [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}],
-    ]
-}
+def create_dynamic_subservice_link_keyboard(service_data, service_id):
+    try:
+        inline_keyboard = [
+                [{'text': service.get('NAME'), 'url': service.get('URL')}] 
+                for service in service_data
+            ]
+        inline_keyboard.append([{'text': 'Назад', 'callback_data': f"illuminator_SERVICE${service_id}"}])
+        return {'inline_keyboard': inline_keyboard}
+    except Exception as e:
+        return MAIN_KEYBOARD

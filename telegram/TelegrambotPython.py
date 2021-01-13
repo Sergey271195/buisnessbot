@@ -4,7 +4,7 @@ import os
 import logging
 
 TOKEN = '1454168643:AAGQ8X7y9zWrSvsjZ5lYk6cKuwblTTwD55M' 
-HOST_URL = 'https://ac24f10f0880.ngrok.io/telegram/'
+HOST_URL = 'https://1f623c21f961.ngrok.io/telegram/'
 DEEPLINK_URL = 'https://t.me/MyBuisnessIvanovbot'
 
 logging.basicConfig(level=logging.INFO)
@@ -82,6 +82,9 @@ class TelegramBot():
             response = request.json()
             if response.get('ok') == True:
                 logging.info(f'[TELEGRAM EDIT MESSAGE] SUCCESSFULLY EDIT MESSAGE {message_id} TO {user.name}-{user.telegram_id}')
+            else:
+                logging.info(f'[TELEGRAM EDIT MESSAGE] ERROR WHILE EDITING MESSAGE {message_id} TO {user.name}-{user.telegram_id}')
+                logging.info(response)
         except Exception as e:
             logging.info(f'[TELEGRAM EDIT MESSAGE] EXCEPTION WHILE EDITING MESSAGE {message_id} TO {user.name}-{user.telegram_id}')
             logging.info(e)

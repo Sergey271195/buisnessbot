@@ -1,5 +1,6 @@
 from .TelegrambotPython import TelegramBot
-from .keyboards import create_switch_keyboard
+from .keyboards import (create_switch_keyboard, create_dynamic_service_keyboard, 
+                        create_dynamic_subservice_keyboard, create_dynamic_subservice_link_keyboard)
 
 import requests
 import re
@@ -146,8 +147,99 @@ def handle_services_request(user, message_id, service = None):
         logging.info(f'{e}')
 
 
-def handle_sub_service_request(user, message_id):
-    pass
+def handle_service_list_request(user, message_id):
+    logging.info('[SERVICE LIST REQUEST]')
+    request_url = f'{BASE_URL}/api/bot/getServices.php'
+    request = requests.get(request_url)
+    try:
+        response = request.json()
+        response_keyboard = create_dynamic_service_keyboard(response)
+        response_message = 'Доступные меры поддержки'
+        logging.info(f'[SERVICE LIST REQUEST] SUCCESSFULLY SENDING LIST OF SERVICES')
+        TELEGRAM_BOT.edit_text_message(
+            message_update = response_message,
+            user = user,
+            keyboard = response_keyboard,
+            message_id = message_id,
+        )
+       
+    except Exception as e:
+        logging.info(f'[SERVICE LIST REQUEST] EXCEPTION WHILE CREATING SERVICE LIST')
+        logging.info(f'{e}')
+
+
+def get_callback_data(callback_data):
+    if "$" in callback_data:
+        try:
+            necessary_data = int(callback_data.split("$")[1])
+            return necessary_data
+        except Exception as e:
+            return
+
+def get_subservice_callback_data(callback_data):
+    if "$" in callback_data:
+        try:
+            splitted_data = callback_data.split("$")
+            subservice_id = int(splitted_data[1])
+            service_id = int(splitted_data[2])
+            return [subservice_id, service_id]
+        except Exception as e:
+            return
+
+def request_service(url):
+    logging.info(f"[REQUESTINQ URL] {url}")
+    try:
+        request = requests.get(url)
+        response = request.json()
+        logging.info(f"[REQUESTING URL] SUCCESFULLY RETURNING REQUESTED DATA")
+        logging.info(response)
+        return response
+    except Exception as e:
+        logging.info(f"[REQUESTING URL] EXCEPTION RETURNING REQUESTED DATA")
+        logging.info(e)
+        return
+
+def get_service_name(url, service_id):
+    try:
+        service_list = request_service(url)
+        service = list(filter(lambda x: int(x.get('ID')) == service_id, service_list))[0].get("NAME")
+        return service
+    except Exception as e:
+        return ""
+
+def handle_service_request(user, message_id, data):
+    service_id = get_callback_data(data)
+    service_name = get_service_name(f"{BASE_URL}/api/bot/getServices.php", service_id)
+    service_data = request_service(f"{BASE_URL}/api/bot/getServices.php?section={service_id}")
+    response_keyboard = create_dynamic_subservice_keyboard(service_data, service_id)
+    if service_data:
+        logging.info(f'[SERVICE REQUEST] SUCCESSFULLY SENDING SUBSERVICES OF {service_name} SERVICE')
+        TELEGRAM_BOT.edit_text_message(
+            message_update = "Меры поддержки. " + service_name,
+            user = user,
+            keyboard = response_keyboard,
+            message_id = message_id,
+        )
+    else:
+        logging.info(f'[SERVICE REQUEST] ERROR WHILE SENDING SUBSERVICES OF {service_name} SERVICE')
+
+
+def handle_sub_service_request(user, message_id, data):
+    subservice_id, service_id = get_subservice_callback_data(data)
+    service_name = get_service_name(f"{BASE_URL}/api/bot/getServices.php", service_id)
+    subservice_name = get_service_name(f"{BASE_URL}/api/bot/getServices.php?section={service_id}", subservice_id)
+    subservice_data = request_service(f"{BASE_URL}/api/bot/getServices.php?subsection={subservice_id}")
+    response_keyboard = create_dynamic_subservice_link_keyboard(subservice_data, service_id)
+    if subservice_data:
+        logging.info(f'[SUBSERVICE REQUEST] SUCCESSFULLY SENDING LINKS OF {subservice_name} SUBSERVICE')
+        TELEGRAM_BOT.edit_text_message(
+            message_update = f"Меры поддержки. {service_name}. {subservice_name}",
+            user = user,
+            keyboard = response_keyboard,
+            message_id = message_id,
+        )
+    else:
+        logging.info(f'[SUBSERVICE REQUEST] ERROR WHILE SENDING LINKS OF {subservice_name} SUBSERVICE')
     
 
 """  result = response.get('result')
