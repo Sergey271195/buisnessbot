@@ -1,100 +1,44 @@
 
 BASE_URL = 'https://xn--37-9kcqjffxnf3b.xn--p1ai/mery-gospodderzhki/'
 
+def create_standart_button(action_type, action_body, text):
+    return {
+                "Columns": 6,
+                "Rows": 1,
+                "ActionType": action_type,
+                "ActionBody": action_body,
+                "Text": text,
+                "TextVAlign": "middle",
+                "TextHAlign": "center",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            }
+
+BACK_TO_SERVICES_BUTTON = create_standart_button(
+        action_type = "reply", action_body = "illuminator_BACK_SERVICES", text = "Назад"
+    )
+BACK_TO_MAIN_BUTTON = create_standart_button(
+        action_type = "reply", action_body = "illuminator_BACK_MAIN", text = "Меню"
+    )
 
 def create_switch_keyboard(request_type, next_page = None, prev_page = None):
-    if next_page and prev_page:
-        KEYBOARD = {
-            "Type":"keyboard",
-            "DefaultHeight": True,
-            "Buttons": [{
-                "Columns": 6,
-                "Rows": 1,
-                "ActionType": "reply",
-                "ActionBody": f'illuminator_{request_type}${next_page}',
-                "Text": "Продолжение",
-                "TextVAlign": "middle",
-                "TextHAlign": "center",
-                "TextOpacity": 60,
-                "TextSize": "regular"
-            },
-            {
-                "Columns": 6,
-                "Rows": 1,
-                "ActionType": "reply",
-                "ActionBody": f'illuminator_{request_type}${prev_page}',
-                "Text": "Назад",
-                "TextVAlign": "middle",
-                "TextHAlign": "center",
-                "TextOpacity": 60,
-                "TextSize": "regular"
-            },
-            {
-                "Columns": 6,
-                "Rows": 1,
-                "ActionType": "reply",
-                "ActionBody": f'illuminator_BACK_MAIN',
-                "Text": "Меню",
-                "TextVAlign": "middle",
-                "TextHAlign": "center",
-                "TextOpacity": 60,
-                "TextSize": "regular"
-            }]
-        }
-    elif next_page:
-        KEYBOARD = {
-            "Type":"keyboard",
-            "DefaultHeight": True,
-            "Buttons": [{
-                "Columns": 6,
-                "Rows": 1,
-                "ActionType": "reply",
-                "ActionBody": f'illuminator_{request_type}${next_page}',
-                "Text": "Продолжение",
-                "TextVAlign": "middle",
-                "TextHAlign": "center",
-                "TextOpacity": 60,
-                "TextSize": "regular"
-            },
-            {
-                "Columns": 6,
-                "Rows": 1,
-                "ActionType": "reply",
-                "ActionBody": f'illuminator_BACK_MAIN',
-                "Text": "Меню",
-                "TextVAlign": "middle",
-                "TextHAlign": "center",
-                "TextOpacity": 60,
-                "TextSize": "regular"
-            }]
-        }
-    else:
-        KEYBOARD = {
-            "Type":"keyboard",
-            "DefaultHeight": True,
-            "Buttons": [{
-                "Columns": 6,
-                "Rows": 1,
-                "ActionType": "reply",
-                "ActionBody": f'illuminator_{request_type}${prev_page}',
-                "Text": "Назад",
-                "TextVAlign": "middle",
-                "TextHAlign": "center",
-                "TextOpacity": 60,
-                "TextSize": "regular"
-            },
-            {
-                "Columns": 6,
-                "Rows": 1,
-                "ActionType": "reply",
-                "ActionBody": f'illuminator_BACK_MAIN',
-                "Text": "Меню",
-                "TextVAlign": "middle",
-                "TextHAlign": "center",
-                "TextOpacity": 60,
-                "TextSize": "regular"
-            }]
-        }
+    buttons = []
+    if next_page:
+        next_button = create_standart_button(
+                action_type = "reply", action_body =  f'illuminator_{request_type}${next_page}', text = "Продолжение"
+            )
+        buttons.append(next_button)
+    if prev_page:
+        prev_button = create_standart_button(
+                action_type = "reply", action_body =  f'illuminator_{request_type}${prev_page}', text = "Назад"
+            )
+        buttons.append(prev_button)
+    buttons.append(BACK_TO_MAIN_BUTTON)
+    KEYBOARD = {
+        "Type":"keyboard",
+        "DefaultHeight": True,
+        "Buttons": buttons
+    }
     return KEYBOARD
 
 
@@ -135,30 +79,6 @@ MAIN_KEYBOARD = {
         "TextSize": "regular"
     }]
 }
-
-BACK_TO_SERVICES_BUTTON = {
-        "Columns": 6,
-        "Rows": 1,
-        "ActionType": "reply",
-        "ActionBody": "illuminator_BACK_SERVICES",
-        "Text": "Назад",
-        "TextVAlign": "middle",
-        "TextHAlign": "center",
-        "TextOpacity": 60,
-        "TextSize": "regular"
-    }
-
-BACK_TO_MAIN_BUTTON = {
-        "Columns": 6,
-        "Rows": 1,
-        "ActionType": "reply",
-        "ActionBody": "illuminator_BACK_MAIN",
-        "Text": "Назад",
-        "TextVAlign": "middle",
-        "TextHAlign": "center",
-        "TextOpacity": 60,
-        "TextSize": "regular"
-    }
 
 def create_dynamic_service_keyboard(service_data):
     try:

@@ -7,7 +7,8 @@ from .keyboards import MAIN_KEYBOARD
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = '4c783b57e380086b-c90dda0abe0e8ebe-7a99acd0bb05c2de'
-HOST_URL = 'https://1f623c21f961.ngrok.io'
+HOST_URL = 'https://fe1b7c324f47.ngrok.io'
+#HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai:8443/telegram/'
 DEEPLINK_URL = 'viber://pa?chatUri=testwebpythonbot'
 
 class ViberBot():
@@ -123,5 +124,6 @@ class ViberBot():
 
                 logging.info("[BROADCAST MESSAGE VIBER] ERROR WHILE BROADCASTING MESSAGE")
                 logging.info(f"[BROADCAST MESSAGE VIBER] {response}")  
+                raise Exception(f'[BROADCAST MESSAGE VIBER] ERROR WHILE BROADCASTING MESSAGE"')
 
             return {'STATUS_CODE': 400}

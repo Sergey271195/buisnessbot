@@ -156,5 +156,29 @@ def entrypoint(request):
             return JsonResponse({'STATUS_CODE': 200})
 
     return JsonResponse({'STATUS_CODE': 200}) 
+
+
+@csrf_exempt
+def send_text_message(request):
+    json_body = json.loads(request.body)
+    message = json_body.get("message")
+    users = json_body.get("users")
+    if message and isinstance(users, list):
+        try:
+            VIBER_BOT.broadcast_message(message = message, ids = users)
+            logging.info(f"[VIBER] BROADCATING MESSAGE FROM ADMIN PANEL. SUCCESSFULLY SEND MESSAGE {message} TO USER {users}")
+        except Exception as e:
+            logging.info(f"[VIBER] BROADCATING MESSAGE FROM ADMIN PANEL. EXCEPTION WHILE SENDING MESSAGE TO USER {users}")
+            logging.info(e)
+        return JsonResponse({"STATUS_CODE": 200})
+    else:
+        return JsonResponse({"STATUS_CODE": 400, "MESSAGE": "WRONG REQUEST PARAMETERS"})
+
+def test_send_message(request):
+    request = requests.post('http://127.0.0.1:8000/viber/send', json = 
+        {"message": "Откуда я шлю сообщения?", "users": ["4qCEzNFHzLwykk7qTLMILA=="]}
+    )
+    print(request)
+    return JsonResponse({"STATUS_CODE": 200})
       
 

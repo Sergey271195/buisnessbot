@@ -4,13 +4,15 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import TelegramUser, check_or_create_user, check_or_create_user_with_context
 from .TelegrambotPython import TelegramBot
 from .keyboards import MAIN_KEYBOARD
-from .message_handlers import (handle_news_request, handle_events_request, handle_services_request, 
+from .message_handlers import (handle_news_request, handle_events_request, 
                             handle_service_list_request, handle_service_request, handle_sub_service_request )
 
 import json
 import logging
 import requests
 import re
+
+from .models import TelegramUser
 
 logging.basicConfig(level=logging.INFO)
 TELEGRAM_BOT = TelegramBot()
@@ -44,6 +46,29 @@ def entrypoint(request):
 
     return JsonResponse({'STATUS_CODE': 200})
 
+@csrf_exempt
+def send_message_to_users(request):
+    json_body = json.loads(request.body)
+    message = json_body.get("message")
+    users = json_body.get("users")
+    if message and isinstance(users, list):
+        for user_id in users:
+            try:
+                TELEGRAM_BOT.send_text_message_to_id(message = message, telegram_id = user_id)
+                logging.info(f"[TELEGRAM] SENDING TEXT MESSAGE FROM ADMIN PANEL. SUCCESSFULLY SEND MESSAGE {message} TO USER {user_id}")
+            except Exception as e:
+                logging.info(f"[TELEGRAM] SENDING TEXT MESSAGE FROM ADMIN PANEL. EXCEPTION WHILE SENDING MESSAGE TO USER {user_id}")
+                logging.info(e)
+        return JsonResponse({"STATUS_CODE": 200})
+    else:
+        return JsonResponse({"STATUS_CODE": 400, "MESSAGE": "WRONG REQUEST PARAMETERS"})
+
+def test_send_message(request):
+    request = requests.post('http://127.0.0.1:8000/telegram/send', json = 
+        {"message": "Откуда я шлю сообщения?", "users": [540863534]}
+    )
+    print(request)
+    return JsonResponse({"STATUS_CODE": 200})
 
 def handle_text_messages(message_text, user):
     logging.info("[TELEGRAM ENTRYPOINT] TEXT MESSAGE")

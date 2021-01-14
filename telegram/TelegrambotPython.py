@@ -4,7 +4,8 @@ import os
 import logging
 
 TOKEN = '1454168643:AAGQ8X7y9zWrSvsjZ5lYk6cKuwblTTwD55M' 
-HOST_URL = 'https://1f623c21f961.ngrok.io/telegram/'
+HOST_URL = 'https://fe1b7c324f47.ngrok.io/telegram/'
+#HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai:8443/telegram/'
 DEEPLINK_URL = 'https://t.me/MyBuisnessIvanovbot'
 
 logging.basicConfig(level=logging.INFO)
@@ -68,6 +69,24 @@ class TelegramBot():
         except Exception as e:
             logging.info(f'[TELEGRAM SEND MESSAGE] EXCEPTION WHILE SENDING MESSAGE TO {user.name}-{user.telegram_id}')
             logging.info(e)
+
+    
+    def send_text_message_to_id(self, message, telegram_id, keyboard = False):
+        logging.info(f'[TELEGRAM SEND MESSAGE] TRYING TO SEND MESSAGE TO USER WITH ID {telegram_id}')
+        request_url = self.BASE_URL + '/sendMessage'
+        data = {'chat_id': telegram_id, 'text': message, 'parse_mode': 'HTML'}
+        if keyboard:
+            data['reply_markup'] = keyboard
+        json_data = json.dumps(data)
+        try:
+            request = requests.post(request_url, headers = self.HEADERS, data = json_data)
+            response = request.json()
+            if response.get('ok') == True:
+                logging.info(f'[TELEGRAM SEND MESSAGE] SUCCESSFULLY SEND MESSAGE TO USER WITH ID {telegram_id}')
+        except Exception as e:
+            logging.info(f'[TELEGRAM SEND MESSAGE] EXCEPTION WHILE SENDING MESSAGE TO USER WITH ID {telegram_id}')
+            logging.info(e)
+            raise Exception(f'Exception while sending message to specified telegram_id {telegram_id}')
 
     
     def edit_text_message(self, message_id, message_update, user, keyboard = False):

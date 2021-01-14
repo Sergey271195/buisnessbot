@@ -1,32 +1,6 @@
+import logging
+
 BASE_URL = 'https://xn--37-9kcqjffxnf3b.xn--p1ai/mery-gospodderzhki/'
-
-
-def create_switch_keyboard(request_type, next_page = None, prev_page = None):
-    if next_page and prev_page:
-        KEYBOARD = {
-            'inline_keyboard': [
-                [{'text': 'Продолжение', 'callback_data': f'illuminator_{request_type}${next_page}'}],
-                [{'text': 'Назад', 'callback_data': f'illuminator_{request_type}${prev_page}'}],
-                [{'text': 'Меню', 'callback_data': f'illuminator_BACK_MAIN'}],
-            ]
-        }
-    elif next_page:
-        KEYBOARD = {
-            'inline_keyboard': [
-                [{'text': 'Продолжение', 'callback_data': f'illuminator_{request_type}${next_page}'}],
-                [{'text': 'Меню', 'callback_data': f'illuminator_BACK_MAIN'}],
-            ]
-        }
-    else:
-        KEYBOARD = {
-            'inline_keyboard': [
-                [{'text': 'Назад', 'callback_data': f'illuminator_{request_type}${prev_page}'}],
-                [{'text': 'Меню', 'callback_data': f'illuminator_BACK_MAIN'}],
-            ]
-        }
-    return KEYBOARD
-
-
 
 MAIN_KEYBOARD = {
     'inline_keyboard': [
@@ -36,8 +10,20 @@ MAIN_KEYBOARD = {
     ]
 }
 
-BACK_TO_MAIN_BUTTON = [{'text': 'Назад', 'callback_data': 'illuminator_BACK_MAIN'}]
+BACK_TO_MAIN_BUTTON = [{'text': 'Меню', 'callback_data': 'illuminator_BACK_MAIN'}]
 BACK_TO_SERVICES_BUTTON = [{'text': 'Назад', 'callback_data': 'illuminator_BACK_SERVICES'}]
+
+def create_switch_keyboard(request_type, next_page = None, prev_page = None):
+    inline_keyboard = []
+    if next_page:
+        inline_keyboard.append([{'text': 'Продолжение', 'callback_data': f'illuminator_{request_type}${next_page}'}])
+    if prev_page:
+        inline_keyboard.append([{'text': 'Назад', 'callback_data': f'illuminator_{request_type}${prev_page}'}])
+    inline_keyboard.append(BACK_TO_MAIN_BUTTON)
+    KEYBOARD = {
+        'inline_keyboard': inline_keyboard
+    }
+    return KEYBOARD
 
 def create_dynamic_service_keyboard(service_data):
     try:
@@ -48,7 +34,7 @@ def create_dynamic_service_keyboard(service_data):
         inline_keyboard.append(BACK_TO_MAIN_BUTTON)
         return {'inline_keyboard': inline_keyboard}
     except Exception as e:
-        logging.info(f'[DYNAMIC SERVICE KEYBOARD] CREATION ERROR ')
+        logging.info(f'[DYNAMIC SERVICE KEYBOARD] CREATION ERROR')
         logging.info(f'{e}')
         return MAIN_KEYBOARD
 
