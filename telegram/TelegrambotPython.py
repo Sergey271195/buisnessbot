@@ -3,12 +3,11 @@ import json
 import os
 import logging
 
-TOKEN = '1454168643:AAGQ8X7y9zWrSvsjZ5lYk6cKuwblTTwD55M' 
-#HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai/telegram/'
-HOST_URL = 'https://65ec65d2c568.ngrok.io/telegram/'
+TOKEN = os.environ.get("TELEGRAM_TOKEN")
+HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai/telegram/'
 DEEPLINK_URL = 'https://t.me/MyBuisnessIvanovbot'
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='warning.log', encoding='utf-8', level=logging.WARNING)
 
 class TelegramBot():
     

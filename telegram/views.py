@@ -12,7 +12,7 @@ import logging
 import requests
 import re
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='info_telegram_entry.log', encoding='utf-8', level=logging.INFO)
 TELEGRAM_BOT = TelegramBot()
 
 @csrf_exempt
@@ -20,11 +20,11 @@ def entrypoint(request):
     logging.info("[TELEGRAM ENTRYPOINT]")
     try:
         request_body = json.loads(request.body)
-        print(request_body)
         message = request_body.get('message')
         callback_query = request_body.get('callback_query')
         if message:
             logging.info("[TELEGRAM ENTRYPOINT] INCOMING TEXT MESSAGE")
+            logging.info(request_body)
             message_text = message.get('text')
             user = message.get('from')
             entities = message.get('entities')
@@ -60,13 +60,6 @@ def send_message_to_users(request):
         return JsonResponse({"STATUS_CODE": 200})
     else:
         return JsonResponse({"STATUS_CODE": 400, "MESSAGE": "WRONG REQUEST PARAMETERS"})
-
-def test_send_message(request):
-    request = requests.post('http://127.0.0.1:8000/telegram/send', json = 
-        {"message": "Откуда я шлю сообщения?", "users": [540863534]}
-    )
-    print(request)
-    return JsonResponse({"STATUS_CODE": 200})
 
 def handle_text_messages(message_text, user):
     logging.info("[TELEGRAM ENTRYPOINT] TEXT MESSAGE")  

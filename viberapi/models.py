@@ -2,7 +2,7 @@ from django.db import models
 import requests
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='warning.log', encoding='utf-8', level=logging.WARNING)
 BASE_URL = "https://xn--37-9kcqjffxnf3b.xn--p1ai/api/bot/setViberId.php"
 
 def check_or_create_user_with_context(request_user, context):

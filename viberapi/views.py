@@ -12,16 +12,12 @@ from .message_handlers import ( handle_service_list_request, handle_sub_service_
 import requests
 import json
 import logging
+import os
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='info_viber_entry.log', encoding='utf-8', level=logging.INFO)
 
-TOKEN = '4c783b57e380086b-c90dda0abe0e8ebe-7a99acd0bb05c2de'
-HEADERS = {'X-Viber-Auth-Token': TOKEN}
-HOST_URL = 'https://5d9da2d96a4f.ngrok.io'
-RESOURCE_WEBHOOK_URL = 'https://chatapi.viber.com/pa/set_webhook'
 VIBER_BOT = ViberBot()
 TELEGRAM_BOT = TelegramBot()
-
 
 def create_webhook(request):
     viber_response = VIBER_BOT.create_webhook()
@@ -121,12 +117,5 @@ def send_text_message(request):
         return JsonResponse({"STATUS_CODE": 200})
     else:
         return JsonResponse({"STATUS_CODE": 400, "MESSAGE": "WRONG REQUEST PARAMETERS"})
-
-def test_send_message(request):
-    request = requests.post('http://127.0.0.1:8000/viber/send', json = 
-        {"message": "Откуда я шлю сообщения?", "users": ["4qCEzNFHzLwykk7qTLMILA=="]}
-    )
-    print(request)
-    return JsonResponse({"STATUS_CODE": 200})
-      
+     
 

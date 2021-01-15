@@ -1,4 +1,5 @@
 import logging
+logging.basicConfig(filename='warning.log', encoding='utf-8', level=logging.WARNING)
 BASE_URL = 'https://xn--37-9kcqjffxnf3b.xn--p1ai/mery-gospodderzhki/'
 
 def create_standart_button(action_type, action_body, text):
