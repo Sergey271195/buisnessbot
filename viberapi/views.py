@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import ViberUser, check_or_create_user, check_or_create_user_with_context
+from .models import check_or_create_user_with_context
 from .ViberbotPython import ViberBot
 from telegram.TelegrambotPython import TelegramBot
 from .keyboards import MAIN_KEYBOARD
@@ -35,9 +35,7 @@ def remove_webhook(request):
     return JsonResponse(viber_response)
 
 def get_page_number(data):
-    print(data)
     if '$' in data:
-        print("$$", data)
         try:
             page = int(data.split('$')[1])
             return page

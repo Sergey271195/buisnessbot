@@ -7,7 +7,7 @@ import re
 import logging
 import json
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='warning.log', encoding='utf-8', level=logging.WARNING)
 TELEGRAM_BOT = TelegramBot()
 
 BASE_URL = "https://xn--37-9kcqjffxnf3b.xn--p1ai"

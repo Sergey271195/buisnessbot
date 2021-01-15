@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import TelegramUser, check_or_create_user, check_or_create_user_with_context
+from .models import check_or_create_user_with_context
 from .TelegrambotPython import TelegramBot
 from .keyboards import MAIN_KEYBOARD
 from .message_handlers import (handle_news_request, handle_events_request, 
@@ -11,8 +11,6 @@ import json
 import logging
 import requests
 import re
-
-from .models import TelegramUser
 
 logging.basicConfig(level=logging.INFO)
 TELEGRAM_BOT = TelegramBot()
@@ -71,12 +69,11 @@ def test_send_message(request):
     return JsonResponse({"STATUS_CODE": 200})
 
 def handle_text_messages(message_text, user):
-    logging.info("[TELEGRAM ENTRYPOINT] TEXT MESSAGE")
-    user = check_or_create_user(request_user = user)
+    logging.info("[TELEGRAM ENTRYPOINT] TEXT MESSAGE")  
     try:
-        TELEGRAM_BOT.send_text_message(
+        TELEGRAM_BOT.send_text_message_to_id(
                 message = 'Воспользуйтесь клавиатурой для получения актуальной информации',
-                user = user,
+                telegram_id = user.get("id"),
                 keyboard = MAIN_KEYBOARD,
             )
         logging.info("[TELEGRAM ENTRYPOINT] SUCCESSFULLY REPLIED TO TEXT MESSAGE")
@@ -91,19 +88,17 @@ def handle_bot_commands(message_text, user):
         try:
             user_info = message_text.replace('/start', '').strip()
             logging.info(f"[TELEGRAM ENTRYPOINT] CHECKING USER WITH USER INFO {user_info}")
-            user = check_or_create_user_with_context(request_user = user, user_info = user_info)
+            check_or_create_user_with_context(request_user = user, user_info = user_info)
         except Exception as e:
             logging.info("[TELEGRAM ENTRYPOINT] WRONG PARAMETERS WITH REQUEST. UNABLE TO GET BITRIX_ID")
-            user = check_or_create_user(request_user = user)
-        TELEGRAM_BOT.send_text_message(
-                message = 'Воспользуйтесь клавиатурой для получения актуальной информации',
-                user = user,
-                keyboard = MAIN_KEYBOARD,
-            )
+    TELEGRAM_BOT.send_text_message_to_id(
+            message = 'Воспользуйтесь клавиатурой для получения актуальной информации',
+            telegram_id = user.get("id"),
+            keyboard = MAIN_KEYBOARD,
+        )
 
 def handle_callback_query(user, data, message_id):
     logging.info("[TELEGRAM ENTRYPOINT] CALLBACK QUERY")
-    user = check_or_create_user(request_user = user)
 
     if 'illuminator_NEWS' in data:
         logging.info("[TELEGRAM ENTRYPOINT] HANDLING NEWS REQUEST")

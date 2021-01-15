@@ -72,6 +72,13 @@ DATABASES = {
     }
 }
 
+""" 'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'botmoybusiness',
+	'USER': 'moybusiness45f',
+	'PASSWORD': 'QPGudm1n2Qi8'
+    } """
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
