@@ -4,9 +4,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import ViberUser, check_or_create_user, check_or_create_user_with_context
 from .ViberbotPython import ViberBot
 from telegram.TelegrambotPython import TelegramBot
-from .keyboards import (MAIN_KEYBOARD, SERVICES_KEYBOARD, PROMOTION_KEYBOARD,
-                        PERFOMANCE_KEYBOARD, TECH_SUPPORT_KEYBOARD, FINANCIAL_SUPPORT_KEYBOARD,
-                        AGRICULTURE_KEYBOARD, EXPORT_KEYBOARD )
+from .keyboards import MAIN_KEYBOARD
+
+from .message_handlers import ( handle_service_list_request, handle_sub_service_request, handle_service_request,
+                                handle_news_request, handle_events_request )
 
 import requests
 import json
@@ -33,111 +34,60 @@ def remove_webhook(request):
     telegram_response = TELEGRAM_BOT.remove_webhook()
     return JsonResponse(viber_response)
 
+def get_page_number(data):
+    print(data)
+    if '$' in data:
+        print("$$", data)
+        try:
+            page = int(data.split('$')[1])
+            return page
+        except Exception as e:
+            logging.info("[TELEGRAM ENTRYPOINT] EXCEPTION WHILE HANDLING NEWS REQUEST")
+            logging.info(e)
 
-def handle_text_message(user, message):
+def handle_text_message(user_id, message):
     message_text = message.get('text')
     logging.info(f"[HANDLE TEXT MESSAGE] RECIEIVING MESSAGE: '{message_text}'")
 
-    if message_text == 'illuminator_NEWS':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Запрос на получение списка новостей...',
-            keyboard = MAIN_KEYBOARD
-        )
+    if 'illuminator_NEWS' in message_text:
+        page = get_page_number(message_text)
+        handle_news_request(user_id = user_id, page = page)
 
-    elif message_text == 'illuminator_EVENTS':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Запрос на получение списка мероприятий...',
-            keyboard = MAIN_KEYBOARD
-        )
+    elif 'illuminator_EVENTS' in message_text:
+        page = get_page_number(message_text)
+        handle_events_request(user_id = user_id, page = page)
 
-    elif message_text == 'illuminator_SERVICES':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Доступные меры поддержки',
-            keyboard = SERVICES_KEYBOARD
-        )
+    elif message_text == 'illuminator_SERVICES' or message_text == 'illuminator_BACK_SERVICES':
+        handle_service_list_request(user_id = user_id)
 
-    elif message_text == 'illuminator_PROMOTION':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Меры поддержки. Продвижение',
-            keyboard = PROMOTION_KEYBOARD
-        )
-
-    elif message_text == 'illuminator_BACK_SERVICES':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Меры поддержки. Продвижение',
-            keyboard = SERVICES_KEYBOARD
-        )
-
-    elif message_text == 'illuminator_PERFOMANCE':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Меры поддержки. Производительность труда',
-            keyboard = PERFOMANCE_KEYBOARD
-        )
-
-    elif message_text == 'illuminator_TECH_CONNECTION':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Меры поддержки. Техприсоединение',
-            keyboard = TECH_SUPPORT_KEYBOARD
-        )
-
-    elif message_text == 'illuminator_FINANCIAL_SUPPORT':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Меры поддержки. Финансовая поддержка',
-            keyboard = FINANCIAL_SUPPORT_KEYBOARD
-        )
+    elif 'illuminator_SERVICE' in message_text:
+        handle_service_request(user_id = user_id, data = message_text)
     
-    elif message_text == 'illuminator_AGRICULTURE':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Меры поддержки. Сельское хозяйство',
-            keyboard = AGRICULTURE_KEYBOARD
-        )
-
-    elif message_text == 'illuminator_EXPORT':
-        VIBER_BOT.send_text_message(
-            receiver = user,
-            message = 'Меры поддержки. Экспорт',
-            keyboard = EXPORT_KEYBOARD
-        )
+    elif 'illuminator_SUBSERVICE' in message_text:
+        handle_sub_service_request(user_id = user_id, data = message_text)
 
     else:
         VIBER_BOT.send_text_message(
-            receiver = user, 
+            viber_id = user_id, 
             message = 'Воспользуйтесь клавиатурой для получения актуальной информации',
             keyboard = MAIN_KEYBOARD
         )
 
 
 def handle_message(request_body):
-    user = check_or_create_user(request_body.get('sender')) # Think if this one is necessary
+    user_id = request_body.get('sender').get('id')
     message = request_body.get('message')
     if message:
         message_type = message.get('type')
         if message_type == 'text':
-            handle_text_message(user = user, message = message)
+            handle_text_message(user_id = user_id, message = message)
 
 def handle_conversation_start(request_body):
     context = request_body.get('context')
     if context:
         user = check_or_create_user_with_context(request_body.get('user'), context = context)
-    else:
-        user = check_or_create_user(request_body.get('user'))
-    handle_text_message(user = user, message = {'message_text': ''})
-
-
-
-def broadcast_message(message):
-    users = ViberUser.objects.all()
-    ids = [user.viber_id for user in users]
-    VIBER_BOT.broadcast_message(message = message, ids = ids)
+    user_id = request_body.get('user').get('id')
+    handle_text_message(user_id = user_id, message = {'message_text': ''})
 
 
 @csrf_exempt

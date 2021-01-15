@@ -26,6 +26,30 @@ def prepare_paged_response(paged_data):
                     for num, entry in enumerate(paged_data)]
             )
 
+def prepare_paged_response_for_viber(paged_data):
+    if paged_data:
+        buttons = [
+            {  
+                "Columns": 6,
+                "Rows": 5,
+                "ActionType": "open-url",
+                "ActionBody": f'{num+1}. {BASE_URL}{entry.get("DETAIL_PAGE_URL")}',
+                "Text": entry.get("NAME"),
+                "TextVAlign": "middle",
+                "TextHAlign": "middle",
+                "TextOpacity": 60,
+                "TextSize": "regular"
+            } for num, entry in enumerate(paged_data)
+        ]
+        media = {
+        "Type":"rich_media",
+        "ButtonsGroupColumns": 6,
+        "ButtonsGroupRows": 5,
+        "BgColor":"#FFFFFF",
+        "Buttons": buttons
+        }
+        return media
+
 def get_json_paged_data(url, request_page):
     response = get_json_data(url)
     try:
@@ -37,33 +61,33 @@ def get_json_paged_data(url, request_page):
         logging.info(f'[PAGED REQUEST] EXCEPTION WHILE PARSING PAGE {request_page} DATA')
         return [None, None, "Exception while parsing"]
 
-def get_paged_data(url, request_page, default_message = None):
+def get_paged_data(url, request_page, default_message = None, viber = False):
     paged_data, is_more, exception = get_json_paged_data(url, request_page)
     if not exception:
-        response_message = prepare_paged_response(paged_data)
+        response_message = prepare_paged_response_for_viber(paged_data) if viber else prepare_paged_response(paged_data)
         if not response_message:
             response_message = default_message
         prev_page_num = request_page - 1 if request_page != 1 else None
         next_page_num = request_page + 1 if is_more else None
         return (response_message, prev_page_num, next_page_num)
 
-def get_news_data_for_page(page = None):
+def get_news_data_for_page(page = None, viber = False):
     
     request_page = page if page else 1
     logging.info(f'[NEWS REQUEST] REQUESTING PAGE {request_page}')
     request_url = f'{BASE_URL}/api/bot/getNews.php?count=5&page={request_page}'
     return get_paged_data(
-            request_url, request_page, "В настоящее время актуальных новостей нет"
+            request_url, request_page, "В настоящее время актуальных новостей нет", viber
         )
 
 
-def get_events_data_for_page(page = None):
+def get_events_data_for_page(page = None, viber = False):
     
     request_page = page if page else 1
     logging.info(f'[EVENTS REQUEST] REQUESTING PAGE {request_page}')
     request_url = f'{BASE_URL}/api/bot/getEvents.php?count=5&page={request_page}'
     return get_paged_data(
-            request_url, request_page, "В настоящее время никаких мероприятий не запланировано"
+            request_url, request_page, "В настоящее время никаких мероприятий не запланировано", viber
         )
 
 
@@ -87,7 +111,6 @@ def handle_news_request(user, message_id, page = None):
 
 def handle_events_request(user, message_id, page = None):
     response_message, prev_page_num, next_page_num = get_events_data_for_page(page)
-    print(prev_page_num, next_page_num)
     response_keyboard = create_switch_keyboard(
             request_type = 'EVENTS',
             next_page = next_page_num,

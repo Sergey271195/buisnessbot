@@ -4,8 +4,8 @@ import os
 import logging
 
 TOKEN = '1454168643:AAGQ8X7y9zWrSvsjZ5lYk6cKuwblTTwD55M' 
-HOST_URL = 'https://fe1b7c324f47.ngrok.io/telegram/'
-#HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai:8443/telegram/'
+#HOST_URL = 'https://8c2cfc83235d.ngrok.io/telegram/'
+HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai/telegram/'
 DEEPLINK_URL = 'https://t.me/MyBuisnessIvanovbot'
 
 logging.basicConfig(level=logging.INFO)

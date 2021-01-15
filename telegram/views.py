@@ -101,7 +101,6 @@ def handle_bot_commands(message_text, user):
                 keyboard = MAIN_KEYBOARD,
             )
 
-
 def handle_callback_query(user, data, message_id):
     logging.info("[TELEGRAM ENTRYPOINT] CALLBACK QUERY")
     user = check_or_create_user(request_user = user)

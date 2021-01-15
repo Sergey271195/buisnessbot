@@ -7,8 +7,8 @@ from .keyboards import MAIN_KEYBOARD
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = '4c783b57e380086b-c90dda0abe0e8ebe-7a99acd0bb05c2de'
-HOST_URL = 'https://fe1b7c324f47.ngrok.io'
-#HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai:8443/telegram/'
+#HOST_URL = 'https://8c2cfc83235d.ngrok.io'
+HOST_URL = 'https://bot.xn--37-9kcqjffxnf3b.xn--p1ai/'
 DEEPLINK_URL = 'viber://pa?chatUri=testwebpythonbot'
 
 class ViberBot():
@@ -53,8 +53,46 @@ class ViberBot():
         logging.info("[VIBER WEBHOOK] SUCCESSFULLY REMOVED WEBHOOK")
         return {'STATUS_CODE': 200}
 
+
+    def send_rich_media(self, media, viber_id = None, keyboard = False):
+        logging.info("[SEND RICH MEDIA VIBER] SENDING MESSAGE")
+
+        post_data = {
+            'sender': {
+                'name': 'Viber Bot',
+            },
+            "type":"rich_media",
+            "min_api_version": 7,
+            "rich_media": media,
+        }
+
+        if viber_id:
+            post_data['receiver'] = viber_id
+        if keyboard:
+            post_data['keyboard'] = keyboard
+
+        json_data = json.dumps(post_data, ensure_ascii = False)
+
+        request = requests.post(
+            url = self.RESOURCE_MESSAGE_URL,
+            headers = self.HEADERS,
+            data = json_data.encode('utf-8'),
+        )
+        
+        if request.status_code == 200:
+            response = request.json()
+            response_status = self.check_response_status(response)
+            
+            if response_status == 200:
+                logging.info(f"[SEND MESSAGE VIBER] SUCCESSFULLY SEND TEXT MESSAGE {media}")
+                return {'STATUS_CODE': 200}
+
+            logging.info("[SEND MESSAGE VIBER] ERROR WHILE SENDING MESSAGE")
+            logging.info(f"[SEND MESSAGE VIBER] {response}")  
+
+        return {'STATUS_CODE': 400}
     
-    def send_text_message(self, message, receiver = None, keyboard = False):
+    def send_text_message(self, message, viber_id = None, keyboard = False):
 
         logging.info("[SEND MESSAGE VIBER] SENDING MESSAGE")
 
@@ -66,8 +104,8 @@ class ViberBot():
             "text": message,
         }
 
-        if receiver:
-            post_data['receiver'] = receiver.viber_id
+        if viber_id:
+            post_data['receiver'] = viber_id
         if keyboard:
             post_data['keyboard'] = keyboard
 

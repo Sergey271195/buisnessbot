@@ -56,21 +56,3 @@ def check_or_create_user_with_context(request_user, context):
         logging.info(f"[SENDING NEW USER TO BASE URL VIBER] {db_url}")
         db_request = requests.get(db_url)
         logging.info(db_request.text)
-
-        try:
-            viber_user = ViberUser.objects.get(viber_id = request_user.get('id'), bitrix_id = bitrix_id)
-            logging.info(f"[CHECK OR CREATE USER WITH CONTEXT] USER ALREDAY EXISTS")
-            logging.info(f"{viber_user.__dict__}")
-            return viber_user
-        except ViberUser.DoesNotExist:
-            viber_user = check_or_create_user(request_user = request_user)
-            logging.info("[CHECK OR CREATE USER WITH CONTEXT] FETCHING OR CREATING USER WITHOUT CONTEXT")
-            if viber_user:
-                viber_user.bitrix_id = bitrix_id
-                viber_user.save()
-                logging.info(f"[CHECK OR CREATE USER WITH CONTEXT] ADDING BITRIX_ID = {bitrix_id} TO EXISTING USER")
-                return viber_user
-            return viber_user          
-    else:
-        logging.info("[CHECK OR CREATE USER WITH CONTEXT] SWITCHING TO CHECK OR CREATE USER WITHOUT CONTEXT")
-        return check_or_create_user(request_user = request_user)
