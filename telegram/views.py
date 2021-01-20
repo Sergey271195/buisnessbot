@@ -64,7 +64,7 @@ def send_message_to_users(request):
         return JsonResponse({"STATUS_CODE": 400, "MESSAGE": "WRONG REQUEST PARAMETERS"})
 
 def test_send_message(request):
-    request = requests.post('http://127.0.0.1:8000/telegram/send', json = 
+    request = requests.post('https://bot.xn--37-9kcqjffxnf3b.xn--p1ai/telegram/send', json = 
         {"message": "Откуда я шлю сообщения?", "users": [540863534]}
     )
     print(request)

@@ -22,7 +22,6 @@ RESOURCE_WEBHOOK_URL = 'https://chatapi.viber.com/pa/set_webhook'
 VIBER_BOT = ViberBot()
 TELEGRAM_BOT = TelegramBot()
 
-
 def create_webhook(request):
     viber_response = VIBER_BOT.create_webhook()
     telegram_response = TELEGRAM_BOT.create_webhook()
@@ -125,7 +124,7 @@ def send_text_message(request):
         return JsonResponse({"STATUS_CODE": 400, "MESSAGE": "WRONG REQUEST PARAMETERS"})
 
 def test_send_message(request):
-    request = requests.post('http://127.0.0.1:8000/viber/send', json = 
+    request = requests.post('https://bot.xn--37-9kcqjffxnf3b.xn--p1ai/viber/send', json = 
         {"message": "Откуда я шлю сообщения?", "users": ["4qCEzNFHzLwykk7qTLMILA=="]}
     )
     print(request)
